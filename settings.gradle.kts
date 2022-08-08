@@ -1,0 +1,1 @@
+rootProject.name = "ru.playzone.test_mobile_developer_lesson"
