@@ -12,13 +12,13 @@ import java.util.UUID
 fun Application.configureLoginRouting() {
 
     routing {
-        get("/login") {
+        post("/login") {
             val receive = call.receive(LoginReceiveRemote::class)
             if (InMemoryCache.userList.map { it.login }.contains(receive.login)) {
                 val token = UUID.randomUUID().toString()
                 InMemoryCache.tokenList.add(TokenCache(login = receive.login, token = token))
                 call.respond(LoginResponseRemote(token = token))
-                return@get
+                return@post
             }
 
             call.respond(HttpStatusCode.BadRequest)
