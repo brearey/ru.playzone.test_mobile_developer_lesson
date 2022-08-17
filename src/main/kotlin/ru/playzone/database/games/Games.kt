@@ -6,47 +6,38 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import ru.playzone.database.tokens.TokenDTO
 
-object Games: Table() {
-    val gameId = Games.varchar("gameId", 100)
-    val name = Games.varchar("name", 100)
-    val backdrop = Games.varchar("backdrop", 50).nullable()
-    val logo = Games.varchar("logo", 50)
-    val description = Games.varchar("description", 500)
-    val downloadCount = Games.integer("download_count")
-    val version = Games.varchar("version", 15)
-    val weight = Games.varchar("weight", 10)
+object Games : Table() {
+    private val gameId = Games.varchar(name = "gameId", length = 100)
+    private val title = Games.varchar(name = "title", length = 150)
+    private val description = Games.varchar(name = "description", length = 500)
+    private var version = Games.varchar(name = "version", length = 20)
+    private var size = Games.double(name = "size")
 
-    //insert game
     fun insert(gameDTO: GameDTO) {
         transaction {
             Games.insert {
-                it[gameId] = gameDTO.gameId
-                it[name] = gameDTO.name
-                it[backdrop] = gameDTO.backdrop
-                it[logo] = gameDTO.logo
+                it[gameId] = gameDTO.gameID
+                it[title] = gameDTO.title
                 it[description] = gameDTO.description
-                it[downloadCount] = gameDTO.downloadCount
                 it[version] = gameDTO.version
-                it[weight] = gameDTO.weight
+                it[size] = gameDTO.size
             }
         }
     }
 
-    fun fetchGames(): List<GameDTO> {
+    fun fetchAll(): List<GameDTO> {
         return try {
             transaction {
-                Games.selectAll().toList().map {
-                    GameDTO(
-                        gameId = it[gameId],
-                        name = it[name],
-                        backdrop = it[backdrop],
-                        logo = it[logo],
-                        description = it[description],
-                        downloadCount = it[downloadCount],
-                        version = it[version],
-                        weight = it[weight],
-                    )
-                }
+                Games.selectAll().toList()
+                    .map {
+                        GameDTO(
+                            gameID = it[gameId],
+                            title = it[title],
+                            description = it[description],
+                            version = it[version],
+                            size = it[size]
+                        )
+                    }
             }
         } catch (e: Exception) {
             emptyList()
