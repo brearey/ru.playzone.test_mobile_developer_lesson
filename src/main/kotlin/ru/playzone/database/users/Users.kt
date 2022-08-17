@@ -10,7 +10,7 @@ object Users: Table() {
     private val login = Users.varchar("login", 25)
     private val password = Users.varchar("password", 25)
     private val username = Users.varchar("username", 25)
-    private val email = Users.varchar("email", 25)
+    private val email = Users.varchar("email", 25).nullable()
 
     //CRUD
     fun insert(userDTO: UserDTO) {
@@ -18,7 +18,7 @@ object Users: Table() {
             Users.insert {
                 it[login] = userDTO.login
                 it[password] = userDTO.password
-                it[email] = userDTO.email ?: ""
+                it[email] = userDTO.email
                 it[username] = userDTO.username
             }
         }
