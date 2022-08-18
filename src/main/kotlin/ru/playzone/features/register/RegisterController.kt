@@ -11,46 +11,45 @@ import ru.playzone.database.users.UserDTO
 import ru.playzone.database.users.Users
 import ru.playzone.utils.isValidEmail
 import java.lang.Exception
+import java.nio.charset.Charset
 import java.util.*
 
 class RegisterController(private val call: ApplicationCall) {
 
     suspend fun registerNewUser() {
-
         val registerReceiveRemote = call.receive<RegisterReceiveRemote>()
-        if(!registerReceiveRemote.email.isValidEmail()) {
+        if (!registerReceiveRemote.email.isValidEmail()) {
             call.respond(HttpStatusCode.BadRequest, "Email is not valid")
         }
 
-        //fetch user
         val userDTO = Users.fetchUser(registerReceiveRemote.login)
-        //check user exists
         if (userDTO != null) {
             call.respond(HttpStatusCode.Conflict, "User already exists")
         } else {
-            val token = UUID.randomUUID().toString() //generate token
+            val token = UUID.randomUUID().toString()
 
             try {
-                //add new user in database
-                Users.insert(UserDTO(
-                    login = registerReceiveRemote.login,
-                    password = registerReceiveRemote.password,
-                    username = "",
-                    email = registerReceiveRemote.email
-                ))
+                Users.insert(
+                    UserDTO(
+                        login = registerReceiveRemote.login,
+                        password = registerReceiveRemote.password,
+                        email = registerReceiveRemote.email,
+                        username = ""
+                    )
+                )
             } catch (e: ExposedSQLException) {
                 call.respond(HttpStatusCode.Conflict, "User already exists")
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.BadRequest, "Can't create user ${e.localizedMessage}")
             }
 
-            //add token in database
-            Tokens.insert(TokenDTO(
-                rowId = UUID.randomUUID().toString(), //generate id for token in database
-                login = registerReceiveRemote.login,
-                token = token
-            ))
-            //return a token to client
+            Tokens.insert(
+                TokenDTO(
+                    rowId = UUID.randomUUID().toString(), login = registerReceiveRemote.login,
+                    token = token
+                )
+            )
+
             call.respond(RegisterResponseRemote(token = token))
         }
     }

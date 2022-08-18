@@ -8,7 +8,11 @@ fun Application.configureRouting() {
 
     routing {
         get("/") {
-            call.respondText("Я создал свой сервер на Kotlin KTOR")
+            call.respondText("Hello, World")
+        }
+
+        get("/test") {
+            call.respondText("Test Hello World")
         }
     }
 }

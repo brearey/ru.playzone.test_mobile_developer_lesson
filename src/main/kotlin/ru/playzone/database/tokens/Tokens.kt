@@ -5,12 +5,11 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
-object Tokens: Table() {
-    val id = Tokens.varchar("id", 50)
-    val login = Tokens.varchar("login", 25)
-    val token = Tokens.varchar("token", 50)
+object Tokens : Table() {
+    private val id = Tokens.varchar("id", 50)
+    private val login = Tokens.varchar("login", 25)
+    private val token = Tokens.varchar("token", 50)
 
-    //insert token
     fun insert(tokenDTO: TokenDTO) {
         transaction {
             Tokens.insert {
@@ -24,13 +23,14 @@ object Tokens: Table() {
     fun fetchTokens(): List<TokenDTO> {
         return try {
             transaction {
-                Tokens.selectAll().toList().map {
-                    TokenDTO(
-                        rowId = it[Tokens.id],
-                        login = it[Tokens.login],
-                        token = it[Tokens.token]
-                    )
-                }
+                Tokens.selectAll().toList()
+                    .map {
+                        TokenDTO(
+                            rowId = it[Tokens.id],
+                            token = it[Tokens.token],
+                            login = it[Tokens.login]
+                        )
+                    }
             }
         } catch (e: Exception) {
             emptyList()
