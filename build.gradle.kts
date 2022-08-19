@@ -38,6 +38,7 @@ dependencies {
 
     //Postgresql
     implementation("org.postgresql:postgresql:42.3.6")
+    implementation("com.zaxxer:HikariCP:5.0.1")
 
     implementation("ch.qos.logback:logback-classic:$logback_version")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
